@@ -1,19 +1,40 @@
 import { dbank } from "../../declarations/dbank";
 
-document.querySelector("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const button = e.target.querySelector("button");
+window.addEventListener("load", async ()=>{
 
-  const name = document.getElementById("name").value.toString();
+  update();
+  
+});
+document.querySelector("form").addEventListener("submit", async (event)=>{
+  event.preventDefault();
+  var button = document.querySelector("#submit-btn");
+  const inputAmount = parseFloat(document.querySelector("#input-amount").value);
+  const outputAmount = parseFloat(document.querySelector("#withdrawal-amount").value);
 
-  button.setAttribute("disabled", true);
+  // console.log(inputAmount);
+  // console.log(outputAmount);
+  button.setAttribute("disabled",true);
 
-  // Interact with foo actor, calling the greet method
-  const greeting = await dbank.greet(name);
+  //Top-up
+  if (document.getElementById("input-amount").value.length !=0){
+    await dbank.topUp(inputAmount);
+  }
+
+  if (document.getElementById("withdrawal-amount").value.length !=0){
+    await dbank.withdrawl(outputAmount);
+  }
+  await dbank.compound();
+
+  update();
 
   button.removeAttribute("disabled");
 
-  document.getElementById("greeting").innerText = greeting;
+  document.getElementById("input-amount").value = "";
+  document.getElementById("withdrawal-amount").value = "";
 
-  return false;
 });
+
+async function update(){
+  const Bal =await dbank.checkBalance();
+  document.getElementById("value").innerText = Math.round(Bal*100)/100;
+}
